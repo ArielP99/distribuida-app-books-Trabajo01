@@ -1,0 +1,12 @@
+db:
+  source: jdbc
+  connection:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  statements:
+    ping: "DO 0"
+    create-table: "CREATE TABLE books (isbn varchar(64), author_id integer, title varchar(64), price numeric(2,6) )"
+    find-one: "SELECT isbn FROM books WHERE id = :id"
+    find-all: "SELECT isbn FROM Books"
+    insert-one: "INSERT INTO books (author_id, isbn, title, price) VALUES(:authorId, :isbn, :title, :price)"

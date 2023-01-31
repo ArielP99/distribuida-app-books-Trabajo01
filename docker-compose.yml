@@ -1,0 +1,55 @@
+version: '3'
+services:
+  app-books:
+    image: arielpg/app-books:1.0.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-books.rule=Host(`app-books.com`)"
+      - "traefik.http.routers.app-books.entrypoints=web"
+    depends_on:
+      - db
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/distribuidav2
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "8080:80"
+
+  app-authors:
+    image: arielpg/app-authors:1.0.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-authors.rule=Host(`app-authors.com`)"
+      - "traefik.http.routers.app-authors.entrypoints=web"
+    depends_on:
+      - db
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/distribuidav2
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "9099"
+
+  db:
+    image: postgres:12
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - slva:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  traefik:
+    image: "traefik:v3.0"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:9090" # entrypoint on docker e.g: 8888
+    ports:
+      - "9090:9090" # localhost : entrypoint on docker e.g:  4545:8888
+      - "6099:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+volumes:
+  slva:
